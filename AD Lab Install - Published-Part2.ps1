@@ -1,25 +1,6 @@
 # Remember to run the baseline variables from Part 1
 ###
 
-$vm0Name = "vm-bas01"
-$vm1Name = "vm-a-dc01"
-$vm1IPAddress = "10.1.10.10"
-$vm2Name = "vm-a-dc02"
-$vm2IPAddress = "10.1.10.11"
-$vm3Name = "vm-a-app01"
-$vm3IPAddress = "10.1.20.20"
-$vm4Name = "vm-a-app02"
-$vm4IPAddress = "10.1.20.21"
-$vm5Name = "vm-a-client01"
-$vm5IPAddress = "10.1.30.30"
-$vmB1Name = "vm-b-dc01"
-$vmB1IPAddress = "10.1.110.10"
-$vmB2Name = "vm-b-app01"
-$vmB2IPAddress = "10.1.120.20"
-$vmB3Name = "vm-b-client01"
-$vmB3IPAddress = "10.1.130.30"
-###
-
 $nsg3Name = "jr-trustlab-nsg-a-app"
 
 az network nsg create -n $nsg3Name -g $rgName
