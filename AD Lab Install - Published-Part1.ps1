@@ -200,7 +200,7 @@ $dcA2Domain="contoso.internal"
 $dcA2DomainNetbios="contoso"
 $dcA2UPNSuffix="contoso.com"
 $dcA2DomainDN="DC=contoso,DC=internal"
-$dcBDomain="wingtip.local"
+$dcBDomain="wingtip.root"
 
 $scriptADC02_1 = @"
 Set-TimeZone -id 'E. Australia Standard Time'
@@ -373,10 +373,13 @@ $scriptADC02_4 = @"
 `$userPass = '$vmPass'
 
 New-ADUser -Name `$displayName -DisplayName `$displayName -SamAccountName `$username -UserPrincipalName `$upn -description ""AAD Connect"" -Path `$OUPath -Enabled `$true -ChangePasswordAtLogon `$false -Department `$Department -AccountPassword (ConvertTo-SecureString `$userPass -AsPlainText -force)
-
-Add-DnsServerConditionalForwarderZone -Name ""$dcBDomain"" -ReplicationScope ""Domain"" -MasterServers $vmB1IPAddress
-
 "@
 az vm run-command invoke --command-id RunPowerShellScript --name $vm2Name -g $rgName --scripts $scriptADC02_4
+###
+
+$scriptADC02_5 = @"
+Add-DnsServerConditionalForwarderZone -Name ""$dcBDomain"" -ReplicationScope ""Domain"" -MasterServers $vmB1IPAddress
+"@
+az vm run-command invoke --command-id RunPowerShellScript --name $vm2Name -g $rgName --scripts $scriptADC02_5
 ###
 
