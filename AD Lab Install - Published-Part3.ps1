@@ -399,3 +399,31 @@ az vm run-command invoke --command-id RunPowerShellScript --name $vmB3Name -g $r
 
 az network public-ip list -g $rgName --query "[].dnsSettings" --output table
 ###
+
+$scriptADC02_TRUST_1 = @"
+# Source: https://social.technet.microsoft.com/wiki/contents/articles/11911.active-directory-powershell-how-to-create-forest-trust.aspx
+`$remoteDomain = ""$dcBDomain""
+`$remoteAdmin = ""$vmB1User""
+`$remoteAdminPassword = '$vmPass'
+`$remoteContext = New-Object -TypeName ""System.DirectoryServices.ActiveDirectory.DirectoryContext"" -ArgumentList @( ""Domain"",`$remoteDomain, `$remoteAdmin, `$remoteAdminPassword)
+try {
+  `$remoteDomain =[System.DirectoryServices.ActiveDirectory.Domain]::getDomain(`$remoteContext)
+  #Write-Host ""GetRemoteDomain: Succeeded for domain `$(`$remoteDomain)""
+} catch {
+  Write-Warning ""GetRemoteDomain: Failed:`n`tError: `$(`$(`$_.Exception).Message)""
+} 
+
+Write-Host ""Connected to Remote domain: `$(`$remoteDomain.Name)""
+`$localDomain=[System.DirectoryServices.ActiveDirectory.Domain]::getCurrentDomain()
+Write-Host ""Connected to Local domain: `$(`$localDomain.Name)""
+try { 
+  # `$localDomain.CreateTrustRelationship(`$remoteDomain,""Inbound"") # One way trust test
+  `$localDomain.CreateTrustRelationship(`$remoteDomain,""Bidirectional"") # Two way trust test
+  Write-Host ""CreateTrustRelationship: Succeeded for domain `$(`$remoteDomain)""
+} catch {
+  Write-Warning ""CreateTrustRelationship: Failed for domain `$(`$remoteDomain)`n`tError: `$(`$(`$_.Exception).Message)""
+}
+
+"@
+az vm run-command invoke --command-id RunPowerShellScript --name $vm2Name -g $rgName --scripts $scriptADC02_TRUST_1
+###
